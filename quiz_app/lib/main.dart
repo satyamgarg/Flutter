@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import './quiz.dart';
 import './result.dart';
 
@@ -12,27 +13,73 @@ class QuizApp extends StatefulWidget {
 }
 
 class _QuizAppState extends State<QuizApp> {
-  var _index = 0;
-
   //Reference and Value will never get changed
   final _questions = const [
     {
-      'questionText': ' What\'s your favorite color?',
-      'answers': ['Red', 'Green', 'Orange', 'White', 'Other']
+      'questionText':
+          '[1/5]. The language spoken by the people by Pakistan is ?',
+      'answers': [
+        {'text': 'Hindi', 'score': 0},
+        {'text': 'Palauan', 'score': 0},
+        {'text': 'Sindhi', 'score': 10},
+        {'text': 'Nauruan', 'score': 0},
+      ]
     },
     {
-      'questionText': 'What\'s your favorite animal?',
-      'answers': ['Tiger', 'Lion', 'Other']
+      'questionText': '[2/5]. The World Largest desert is ?',
+      'answers': [
+        {'text': 'Thar', 'score': 0},
+        {'text': 'Sahara', 'score': 10},
+        {'text': 'Kalahari', 'score': 0},
+        {'text': 'Sonoran', 'score': 0},
+      ]
     },
     {
-      'questionText': 'What\'s your favorite instructor?',
-      'answers': ['Satyam', 'Shantanu', 'Rohit', 'Pravin']
+      'questionText':
+          '[3/5]. Country that has the highest in Barley Production ?',
+      'answers': [
+        {'text': 'China', 'score': 0},
+        {'text': 'India', 'score': 0},
+        {'text': 'Russia', 'score': 10},
+        {'text': 'France', 'score': 0},
+      ]
+    },
+    {
+      'questionText':
+          '[4/5]. The metal whose salts are sensitive to light is ?',
+      'answers': [
+        {'text': 'Silver', 'score': 10},
+        {'text': 'Zinc', 'score': 0},
+        {'text': 'Copper', 'score': 0},
+        {'text': 'Aluminium', 'score': 0},
+      ]
+    },
+    {
+      'questionText':
+          '[5/5]. The Central Rice Research Station is situated in ?',
+      'answers': [
+        {'text': 'Chennai', 'score': 0},
+        {'text': 'Bangalore', 'score': 0},
+        {'text': 'Quilon', 'score': 0},
+        {'text': 'Cuttack', 'score': 10},
+      ]
     },
   ];
 
-  void _answerQuestion() {
+  var _index = 0;
+  var _totalScore = 0;
+
+  void _resetQuiz() {
     setState(() {
-      _index = _index + 1;
+      _index = 0;
+      _totalScore = 0;
+    });
+  }
+
+  void _answerQuestion(int score) {
+    _totalScore += score;
+    setState(() {
+      _index += 1;
     });
     print(_index);
   }
@@ -42,7 +89,7 @@ class _QuizAppState extends State<QuizApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('First Flutter App'),
+          title: Text('Quiz App'),
         ),
         body: _index < _questions.length
             ? Quiz(
@@ -50,7 +97,7 @@ class _QuizAppState extends State<QuizApp> {
                 questionIndex: _index,
                 questions: _questions,
               )
-            : Result(),
+            : Result(_totalScore, _resetQuiz),
       ),
     );
   }

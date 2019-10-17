@@ -8,7 +8,8 @@ class Answer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: 280,
+      margin: EdgeInsets.all(5),
       child: RaisedButton(
         color: Colors.blue,
         child: Text(answerText),
