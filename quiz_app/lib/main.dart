@@ -2,9 +2,186 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
 import './quiz.dart';
 import './result.dart';
+
+void main() => runApp(QuizApplication());
+
+class QuizApplication extends StatefulWidget {
+
+  @override
+  State<StatefulWidget> createState() {
+    return _QuizApplicationState();
+  }
+}
+
+class _QuizApplicationState extends State<QuizApplication> {
+
+  Future<Post> post;
+
+  @override
+  void initState() {
+    super.initState();
+    //post = fetchPost();
+  }
+
+
+  Future<bool> _onBackPressed() {
+    return showDialog(
+      context: context,
+      builder: (context) => new AlertDialog(
+        title: new Text('Are you sure?'),
+        content: new Text('Do you want to exit an App'),
+        actions: <Widget>[
+          new GestureDetector(
+            onTap: () => Navigator.of(context).pop(false),
+            child: roundedButton("No", const Color(0xFF167F67),
+                const Color(0xFFFFFFFF)),
+          ),
+          new GestureDetector(
+            onTap: () => Navigator.of(context).pop(true),
+            child: roundedButton(" Yes ", const Color(0xFF167F67),
+                const Color(0xFFFFFFFF)),
+          ),
+        ],
+      ),
+    ) ??
+        false;
+  }
+
+  Widget roundedButton(String buttonLabel, Color bgColor, Color textColor) {
+    var loginBtn = new Container(
+      padding: EdgeInsets.all(5.0),
+      alignment: FractionalOffset.center,
+      decoration: new BoxDecoration(
+        color: bgColor,
+        borderRadius: new BorderRadius.all(const Radius.circular(10.0)),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: const Color(0xFF696969),
+            offset: Offset(1.0, 6.0),
+            blurRadius: 0.001,
+          ),
+        ],
+      ),
+      child: Text(
+        buttonLabel,
+        style: new TextStyle(
+            color: textColor, fontSize: 20.0, fontWeight: FontWeight.bold),
+      ),
+    );
+    return loginBtn;
+  }
+
+
+
+  //Reference and Value will never get changed
+  final _questions = const [
+    {
+      'questionText':
+      '[1/5]. Guess Animal ?',
+      'questionImg': 'images/dog.jpg',
+      'answers': [
+        {'text': 'Sheep', 'score': 0},
+        {'text': 'Ziraffe', 'score': 0},
+        {'text': 'Dog', 'score': 10},
+        {'text': 'Goat', 'score': 0},
+      ]
+    },
+    {
+      'questionText': '[2/5]. Guess Animal ?',
+      'questionImg': 'images/cow.jpg',
+      'answers': [
+        {'text': 'Camel', 'score': 0},
+        {'text': 'Cow', 'score': 10},
+        {'text': 'Elephant', 'score': 0},
+        {'text': 'Donkey', 'score': 0},
+      ]
+    },
+    {
+      'questionText':
+      '[3/5]. Guess Animal ?',
+      'questionImg': 'images/tiger.jpg',
+      'answers': [
+        {'text': 'Cat', 'score': 0},
+        {'text': 'Horse', 'score': 0},
+        {'text': 'Tiger', 'score': 10},
+        {'text': 'Zebra', 'score': 0},
+      ]
+    },
+    {
+      'questionText':
+      '[4/5]. Guess Animal ?',
+      'questionImg': 'images/horse.jpg',
+      'answers': [
+        {'text': 'Horse', 'score': 10},
+        {'text': 'Elaphant', 'score': 0},
+        {'text': 'Monkey', 'score': 0},
+        {'text': 'Bear', 'score': 0},
+      ]
+    },
+    {
+      'questionText':
+      '[5/5]. Guess Animal ?',
+      'questionImg': 'images/monkey.jpg',
+      'answers': [
+        {'text': 'Cat', 'score': 0},
+        {'text': 'Dog', 'score': 0},
+        {'text': 'Lion', 'score': 0},
+        {'text': 'Monkey', 'score': 10},
+      ]
+    },
+  ];
+
+  var _index = 0;
+  var _totalScore = 0;
+
+  void _resetQuiz() {
+    setState(() {
+      _index = 0;
+      _totalScore = 0;
+    });
+  }
+
+  void _answerQuestion(int score) {
+    _totalScore += score;
+    setState(() {
+      _index += 1;
+    });
+    print(_index);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new WillPopScope(child: MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: FutureBuilder<Post>(
+            future: post,
+            builder: (context, response) {
+              if (response.hasData) {
+                return Text("Quiz App"); //response.data.title
+              } else if (response.hasError) {
+                return Text("Quiz App");
+              }else {
+                return Text("Quiz App");
+              }
+              //return CircularProgressIndicator(backgroundColor: Colors.white,);
+            },
+          ),
+        ),
+        body: _index < _questions.length
+            ? Quiz(
+          answerQuestion: _answerQuestion,
+          questionIndex: _index,
+          questions: _questions,
+        )
+            : Result(_totalScore, _resetQuiz),
+      ),
+    ), onWillPop: _onBackPressed);
+  }
+}
+
 
 Future<Post> fetchPost() async {
   final response =
@@ -36,193 +213,3 @@ class Post {
     );
   }
 }
-
-void main() => runApp(QuizApp());
-
-class QuizApp extends StatefulWidget {
-
-
-  @override
-  State<StatefulWidget> createState() {
-    return _QuizAppState();
-  }
-}
-
-class _QuizAppState extends State<QuizApp> {
-  Future<Post> post;
-
-  @override
-  void initState() {
-    super.initState();
-    post = fetchPost();
-  }
-
-  //Reference and Value will never get changed
-  final _questions = const [
-    {
-      'questionText':
-          '[1/5]. The language spoken by the people by Pakistan is ?',
-      'answers': [
-        {'text': 'Hindi', 'score': 0},
-        {'text': 'Palauan', 'score': 0},
-        {'text': 'Sindhi', 'score': 10},
-        {'text': 'Nauruan', 'score': 0},
-      ]
-    },
-    {
-      'questionText': '[2/5]. The World Largest desert is ?',
-      'answers': [
-        {'text': 'Thar', 'score': 0},
-        {'text': 'Sahara', 'score': 10},
-        {'text': 'Kalahari', 'score': 0},
-        {'text': 'Sonoran', 'score': 0},
-      ]
-    },
-    {
-      'questionText':
-          '[3/5]. Country that has the highest in Barley Production ?',
-      'answers': [
-        {'text': 'China', 'score': 0},
-        {'text': 'India', 'score': 0},
-        {'text': 'Russia', 'score': 10},
-        {'text': 'France', 'score': 0},
-      ]
-    },
-    {
-      'questionText':
-          '[4/5]. The metal whose salts are sensitive to light is ?',
-      'answers': [
-        {'text': 'Silver', 'score': 10},
-        {'text': 'Zinc', 'score': 0},
-        {'text': 'Copper', 'score': 0},
-        {'text': 'Aluminium', 'score': 0},
-      ]
-    },
-    {
-      'questionText':
-          '[5/5]. The Central Rice Research Station is situated in ?',
-      'answers': [
-        {'text': 'Chennai', 'score': 0},
-        {'text': 'Bangalore', 'score': 0},
-        {'text': 'Quilon', 'score': 0},
-        {'text': 'Cuttack', 'score': 10},
-      ]
-    },
-  ];
-
-  var _index = 0;
-  var _totalScore = 0;
-
-  void _resetQuiz() {
-    setState(() {
-      _index = 0;
-      _totalScore = 0;
-    });
-  }
-
-  void _answerQuestion(int score) {
-    _totalScore += score;
-    setState(() {
-      _index += 1;
-    });
-    print(_index);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: FutureBuilder<Post>(
-            future: post,
-            builder: (context, snapshot) {
-              if(snapshot.hasData){
-                return Text(snapshot.data.title);
-              } else if(snapshot.hasError) {
-                return Text("${snapshot.error}");
-              }
-
-              return CircularProgressIndicator();
-            },
-          ),
-        ),
-        body: _index < _questions.length
-            ? Quiz(
-                answerQuestion: _answerQuestion,
-                questionIndex: _index,
-                questions: _questions,
-              )
-            : Result(_totalScore, _resetQuiz),
-      ),
-    );
-  }
-}
-
-/*
-import 'package:flutter/material.dart';
-
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
-  }
-}
-*/

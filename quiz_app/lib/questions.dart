@@ -2,19 +2,29 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Question extends StatelessWidget {
-  final String questionText;
+  final String question;
+  final String questionImage;
 
-  Question(this.questionText);
+  Question(this.question, this.questionImage);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      margin: EdgeInsets.fromLTRB(10, 10, 10, 20),
-      child: Text(
-        questionText,
-        style: TextStyle(fontSize: 28),
-        textAlign: TextAlign.center,
+      alignment: Alignment.center,
+      margin: EdgeInsets.fromLTRB(5, 5, 5, 5),
+      child: Column(
+        children: <Widget>[
+          Text(
+            question,
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold,),
+            textAlign: TextAlign.start,
+          ),
+          Image.asset(
+            questionImage,
+            width: 250,
+            height: 250,
+          ),
+        ],
       ),
     );
   }
